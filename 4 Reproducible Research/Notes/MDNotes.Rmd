@@ -1,0 +1,103 @@
+---
+title: "Markdown Notes"
+author: "Sarah"
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and Microsoft Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+To turn a markdown document into a pdf, run:  
+
+```  
+library(knitr)  
+library(rmarkdown)  
+render("filename.rmd", "pdf_document")  
+```
+
+For more options see:
+
+```
+?render
+```
+
+# Sections
+  
+A section header is proceeded by a number of `#`'s, where the `#` of hashes represents the level. For example:
+    
+## Sub-Section
+
+### Sub-Sub-Section
+
+# Lists
+
+Enumerated lists are simply lines preceded by `1.`. For example,
+
+1. First item
+2. Second item.
+1. Numbers don't matter.
+    1. Sub-list
+    5. Again, numbers don't matter.
+1. Back to original ordering.
+
+1. Start of a new list.
+
+
+For unordered lists, simply preface with `*` or `-` or `+`:
+
+- first
++ second
+* third
+    - Sub list
+    + another
+* fourth
+
+
+# Tables
+
+Tables are generated using ASCII.
+
+| Name | Height | Weight |
+|:-----|:------:|:------:|
+| Bob  | 6'1"   | 195    |
+| Sue  | 5'4"   | 134    |
+
+### Note:
+* The second line (with the `:`'s and `-`'s) separates the header from the body. The `:`'s refer to alignment (`---` is left-aligned, `--:` is right- and `:-:` is centered). There must be at least three characters between the `|`'s, though more `-`'s is fine.  
+* White space is ignored and only included to make editing easy. 
+
+# R Markdown
+
+RMarkdown extends Markdown to easily embed R code by creating a chunk wrapped in triple backticks. To also run the code include {r} :
+
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+You can pass options to chunks. For example, `{r, eval = FALSE}` will display R code but not execute it. Here are some useful options:
+
+* `echo = FALSE`: Display the output but suppress the code.
+* `results = 'asis'`: Prevents further processing of the output. Useful if a table created in R (e.g. using kable or xtable). Not generally needed otherwise
+* `engine ='enginename'`: You can actually run other code. For example, `engine = 'stata'` runs the code through Stata,  `engine = 'bash'` runs linux command line code.
+* `message = FALSE` and `warning = FALSE`: Suppresses R messages and warnings respectively. Useful when loading packages.
+
+In-line R code can be included by wrapping a call to r max(x) in single backticks. Excluding the r part renders the code as code without processing it: `max(x)`
+
+# Equations
+
+Markdown and RMarkdown support LaTeX math equations. Inline e.g. `\(y = \beta x + \epsilon\)` : \(y = \beta x + \epsilon\) Stand alone equations similarly:
+
+```
+\[
+  y = \beta x + \epsilon
+\]
+```
+
+\[
+  y = \beta x + \epsilon
+\]
