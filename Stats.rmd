@@ -1,0 +1,65 @@
+---
+title: "Statistical Inference Project"
+author: "S. Smolenski"
+---
+
+# Overview:
+In this project, I investigate the exponential distribution in R and compare it to the Central Limit Theorem. I consider the distribution of averages of 40 exponentials, performing 1000 simulations to create the data used for this project.
+
+# Simulations:
+I set the parameters for the exponential function and perform the simulation.
+
+```{r}
+n=40
+numsim=1000
+lambda<-.2
+Sim<-matrix(rexp(numsim*n,lambda), numsim)
+Means<-apply(Sim, 1, mean)
+
+```
+
+# Sample Mean versus Theoretical Mean:
+The means are approximately the same:
+
+## Sample mean:
+```{r}
+SimMn<-mean(Means)
+SimMn
+```
+
+## Theoretical Mean:
+```{r}
+TheoMn<-1/lambda
+TheoMn
+```
+
+## Visual Comparison of Means:
+```{r}
+hist(Means, col="thistle", main="Simulated Means")
+abline(v=SimMn, col="dodgerblue4", lwd=2)
+abline(v=TheoMn, col="darkmagenta", lty=3)
+legend("topright", lwd=c(3,1), lty=c(1,2), col=c("dodgerblue4","darkmagenta"), legend=c("Simulated Mean", "Theoretical Mean"))
+```
+
+# Sample Variance versus Theoretical Variance:
+
+```{r}
+SimVar<-var(Means)
+SimVar
+```
+
+```{r}
+TheoVar<-((-1/lambda)^2)/n
+TheoVar
+```
+
+The theoretical variance is slightly lower than the simulated variance, implying that the simulated distribution will have a slightly larger spread. The larger numsim becomes, the closer to the theoretical variance this value should be.
+
+# Distribution
+
+If we overlay a normal density function on top of our simulated data, we find that the distribution is roughly normal:
+
+```{r}
+hist(Means, col="cadetblue", main="Simulated Means")
+curve( dnorm(x, mean=SimMn,sd=sqrt(SimVar))*500, 2,8, add=TRUE, col="gray42")
+```
