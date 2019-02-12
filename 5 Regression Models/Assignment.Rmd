@@ -1,0 +1,53 @@
+---
+title: "Fuel Efficiency in Automatic and Manual Transmission Cars"
+author: "S Smolenski"
+---
+
+# Executive Summary
+
+We find that fuel efficiency is correlated with transmission type and that manual transmissions, on average, get 5.277 more miles per gallon than their hp-equivalent automatic transmission counterparts. 
+
+# The Data
+
+```{r, echo=FALSE}
+data(mtcars)
+```
+
+```{r, echo=FALSE}
+boxplot(mtcars$mpg~mtcars$am)
+```
+
+At first glance it appears as if automatic transmissions have considerably lower mpg than their manual counterparts. But we have not accounted for any other possible predictors.
+
+# Model Fitting
+
+I generate four different models; one in which mpg is predicted only by transmission type, one including weight, one including horsepower, and one including both weight and hp.
+
+```{r}
+fit1<-lm(mpg~factor(am),data=mtcars)
+fit2<-lm(mpg~factor(am)+wt,data=mtcars)
+fit3<-lm(mpg~factor(am)+wt+hp,data=mtcars)
+fit4<-lm(mpg~factor(am)+hp,data=mtcars)
+```
+
+When we include both hp and wt, we find that the coeff transmission type is no longer statistically significant (large std error). This implies that wt and hp are highly correlated (understandable).
+
+Looking at the residual plots (see appendix) we see that the fourth model appears to be the best fit.
+
+
+# Conclusions
+
+```{r}
+summary(fit4)
+```
+
+Slope coef is difference in mean of mpg of automatics and manuals. ie, manuals have a 5.277 mpg increase, on average. The standard error for the coefficients is small compared to the estimates (we chose fit4 to avoid the variance inflation presented in fit3), and uncertainty is within a statistically acceptable range.
+
+# Appendix
+
+```{r, echo=FALSE}
+plot(fit1,which=1)
+plot(fit2,which=1)
+plot(fit3,which=1)
+plot(fit4, which=1)
+```
