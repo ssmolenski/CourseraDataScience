@@ -1,0 +1,97 @@
+---
+title: "Human Activity Recognition with Random Forest"
+author: "S Smolenski"
+---
+
+# Introduction
+
+In this project, I consider the Weight Lifting Exercises dataset from [this] (http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har#literature) website. The dataset was collected by using Microsoft Kinect to develop a way to recognize incorrect from correctly performed exercises. According to the website "Six young health participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five different fashions: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E)."
+
+# Model Building
+
+To classify a given exercise as belonging to one of class A - E, I train a Random Forest model and perform a brief scan over parameter space to determine the values of ntree and mtry that give the highest accuracy.
+
+```{r, echo=FALSE}
+suppressWarnings(library(caret))
+suppressWarnings(library(ElemStatLearn))
+suppressWarnings(library(randomForest))
+```
+
+For reproducibility, I set the rng seed:
+
+```{r}
+set.seed(1234)
+```
+
+## Preprocessing
+
+The raw data set contains several columns which are primarily empty, primarily NA, or contain many mathematical errors (ie "kurtosis_picth_belt" contains many "#DIV/0!" errors). I omit these columns from the dataset and focus on training the model entirely on the more informative parameters.
+
+```{r}
+data <- read.csv("pml-training.csv")[,c(8:11,37:49,60:68,84:86,102,113:124,140,151:160)]
+test <- read.csv("pml-testing.csv")[,c(8:11,37:49,60:68,84:86,102,113:124,140,151:160)]
+```
+
+To perform the scan over parameter space, I create one cross validation set on which to test models for highest accuracy.
+
+```{r}
+inTrain <- createDataPartition(y=data$classe, p=.70, list=FALSE)
+train <- data[inTrain,]
+crossVal <- data[-inTrain,]
+```
+
+Furthermore, I eliminate any predictors which have near zero variance, as they will not have strong predictive power and including them in the model will only waste time and processing power. I also drop the first four columns, which contain information about the time at which the exercise was performed and the user who performed the exercise, none of which are of particular interest.
+
+```{r}
+zeroVar <- nearZeroVar(train)
+train <- train[-c(zeroVar,1:7)]
+crossVal <- crossVal[-c(zeroVar,1:7)]
+test <- test[-c(zeroVar,1:7)]
+```
+
+## Model training
+
+Given the limited processing power and time available for this analysis project, I chose to scan over a very limited region of parameter space for the best parameters:
+
+```{r}
+N=c(300, 500, 700)
+M=c(10,20)
+A=0
+Nbest=0
+Mbest=0
+
+for(n in N){
+    for(m in M){
+        ffit <- randomForest(classe~., data=train, ntree=n, mtry=m)
+        pred <- predict(ffit, crossVal)
+        acc<-confusionMatrix(pred, crossVal$classe)$overall['Accuracy']
+
+        if(acc > A) {
+            A=acc
+            Nbest=n
+            Mbest=m
+            bestfit=ffit
+        }
+    }
+}
+```
+
+Following the scan, we find that the best parameters are:
+
+```{r, echo=FALSE}
+cat("n = ", Nbest, "\n m = ", Mbest, "\n")
+```
+
+And the model is parameterized by:
+
+```{r, echo=FALSE}
+print(bestfit)
+```
+
+# Summary and Conclusions
+
+We have trained a random forest model on the Weight Lifting Exercise dataset and achieved an accuracy on the cross validation set of 
+
+```{r, echo=FALSE}
+print(A)
+```
