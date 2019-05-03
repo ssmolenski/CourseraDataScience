@@ -1,0 +1,11 @@
+---
+title: "plotly"
+author: "Ssmolenski"
+---
+
+# April 26, 2019
+
+```{r}
+library(plotly)
+plot_ly(mtcars, x = ~wt, y = ~mpg, type = "scatter")
+```
